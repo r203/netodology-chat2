@@ -2,8 +2,8 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import { messagesAPI } from './API/api'
 import { nanoid } from 'nanoid'
-import MessageForm from './API/components/MessageForm';
-import MessageList from './API/components/MessageList';
+import MessageForm from './components/MessageForm';
+import MessageList from './components/MessageList';
 
 function App() {
   const [messages, setMessages] = useState([]);
