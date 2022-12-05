@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { messagesAPI } from './API/api'
 import { nanoid } from 'nanoid'
 import MessageForm from './components/MessageForm';
@@ -14,30 +14,32 @@ function App() {
   const colors = ['green', 'blue', 'yellow', 'pink'];
   const randomColor = colors[Math.floor(Math.random() * 4)];
 
-  const fetchData = async (lastMessage) => {
+  const fetchData = useCallback(async (lastMessage) => {
     const data = await messagesAPI.getMessages(lastMessage);
+    if (messages.length !== data.length) {
       setMessages(data)
-  }
+    }
+  }, [messages])
 
   useEffect(() => {
-    if(!userID) {
+    if (!userID) {
       let newUserID = nanoid();
       setUserID(newUserID);
       localStorage.setItem('userID', newUserID);
     }
 
-    if(!userColor) {
+    if (!userColor) {
       let newUserColor = randomColor;
       setUserColor(newUserColor);
       localStorage.setItem('userColor', newUserColor);
     }
 
     const timer = setInterval(() => {
-      fetchData(lastMessageId);
+      fetchData(0);
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [lastMessageId, userID, userColor, randomColor]);
+  }, [fetchData, lastMessageId, userID, userColor, randomColor]);
 
   const postData = async (message) => {
     setLastMessageId(prevLastMessageId => prevLastMessageId + 1);
@@ -48,11 +50,11 @@ function App() {
     <div className="App">
       <MessageList
         messages={messages}
-        userID={userID}/>
+        userID={userID} />
       <MessageForm
         userID={userID}
         userColor={userColor}
-        postData={postData}/>
+        postData={postData} />
 
     </div>
   );
